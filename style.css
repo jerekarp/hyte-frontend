@@ -30,7 +30,7 @@ body {
 }
 
 h1 {
-    color: white;
+    color: rgb(39, 221, 161);
 }
 
 h2 {
@@ -62,19 +62,17 @@ nav a:active {
     text-decoration: underline;
 }
 
-nav a:visited {
-    color: rgb(95, 112, 112);
-}
-
 main {
     background-image: url('background.jpg');
     background-position: bottom;
+    background-size: 100%;
     background-repeat: no-repeat;
     width: 60%;
-    height: 600px;
+    height: 30rem;
     border: 2px solid rgb(97, 65, 65);
+    border-radius: 10px;
     margin: 0 auto;
-    margin-top: 20%;
+    margin-top: 5rem;
 }
 
 
