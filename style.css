@@ -13,6 +13,8 @@ body {
     border: 1px solid black;
     position: relative;
     text-align: center;
+    box-shadow: 0 6px 10px rgb(0 0 0 / 0.2);
+    
 }
 
 .box {
@@ -73,6 +75,7 @@ main {
     border-radius: 10px;
     margin: 0 auto;
     margin-top: 5rem;
+    box-shadow: 0 6px 10px rgb(0 0 0 / 0.2);
 }
 
 
