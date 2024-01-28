@@ -7,7 +7,7 @@
     <title>FrontEnd harjoittelu</title>
 </head>
 <body>
-    <nav>
+    <nav class="clearfix">
         <div class="box" id="white"></div>
         <div class="container">
                 <h1>Juoksuvalmennus</h1>               
@@ -16,10 +16,10 @@
                         <li><a href="news.asp">Miten voimme auttaa?</a></li>
                         <li><a href="contact.asp">Yhteystiedot</a></li>
                     </ul>
-        </div>
-        <div class="clear"></div> 
+        </div>s
     </nav>
     <main>
+        <img id="heart" src="heart.png" alt="Heart">
         <h2>Meidän tarinamme</h2>  
         <p class="info">
             Suomalaista juoksuvalmennusta. Valmennuksemme pohjautuu syvään dataan ja sitä tarkastellaan 
@@ -34,10 +34,17 @@
             deserunt veritatis! Debitis iste numquam consequatur.
         </p>
     </main>
-
+    <div id="details">
+        <p id="info1"></p>
+        <p id="info2"></p>
+        <p id="info3"></p>
+        <p id="info4"></p>
+    </div>
     <footer>
         <p>&copy; Jere Karppinen. All rights reserved.</p>
     </footer>
+
+    <script src="index.js"></script>
 </body>
 </html>
 
