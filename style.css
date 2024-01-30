@@ -18,6 +18,20 @@ body {
     box-shadow: 0 6px 10px rgb(0 0 0 / 0.2);
     left: 50%;
     transform: translateX(-50%); 
+    z-index: 9999;
+}
+
+.banner {
+    background-image: url('banner.jpg');
+    background-size: 100%;
+    background-repeat: no-repeat;
+    width: 60%;
+    height: 28rem;
+    position: relative;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 6px 10px rgb(0 0 0 / 0.2);
 }
 
 .box {
@@ -72,7 +86,7 @@ main {
     border: 2px solid rgb(97, 65, 65);
     position: relative;
     border-radius: 10px;
-    margin-top: 5rem;
+    margin-top: 2rem;
     box-shadow: 0 6px 10px rgb(0 0 0 / 0.2);
     display: block;
     margin-left: auto;
@@ -81,11 +95,12 @@ main {
 
 #details {
     margin-right: 500px;
+    line-height: 0.5;
     background-color: rgb(39, 221, 161);
     width: 25%;
-    height: 25%;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    height: 20%;
+    margin-top: 20px;
+    margin-bottom: 100px;
     padding-left: 20px;
     padding-bottom: 10px;
     padding-top: 10px;
@@ -122,4 +137,92 @@ footer {
     position: fixed;
     bottom: 0;
     height: 2.5rem;
+}
+
+@media only screen and (max-width: 768px) {
+    .container {
+        width: 100%;
+        font-size: 12px;
+        box-shadow: none;
+    }
+
+    .banner {
+        width: 100%;
+        box-shadow: none;
+        margin-top: 0;
+    }
+
+    #heart {
+        left: 70%;
+        width: 80px;
+    }
+
+    main {
+        width: 80%;
+        margin-top: -65%; /* Kokeile negatiivista margin-arvoa */
+        margin-bottom: 0;
+        font-size: 13px;
+        box-shadow: none;
+    }
+
+    .box {
+        width: 100%;
+    }
+
+    #details {
+        margin-right: 0;
+        width: 80%;
+        font-size: 11px;
+    }
+
+    footer {
+        width: 100%;
+        left: 0;
+        font-size: 10px;
+        height: 2rem;
+    }
+}
+
+@media only screen and (min-width: 769px) and (max-width: 1366px) {
+    .container {
+        width: 100%;
+        font-size: 16px;
+        box-shadow: none;
+
+    }
+
+    .banner {
+        width: 100%;
+        box-shadow: none;
+    }
+
+    #heart {
+       
+    }
+
+    main {
+        width: 80%;
+        height: 45rem;
+        font-size: 15px;
+        box-shadow: none;
+    }
+
+    .box {
+        width: 100%;
+       
+    }
+
+    #details {
+        margin-right: 0;
+        width: 80%;
+        font-size: 15px;
+    }
+
+    footer {
+        width: 100%;
+        left: 0;
+        font-size: 10px;
+        height: 2rem;
+
+    }
 }
