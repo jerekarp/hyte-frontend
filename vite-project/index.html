@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>HealthDiary App</title>
+</head>
+<body>
+    <h2>HYVINVOINTIPÄIVÄKIRJA</h2>  
+    <main>
+        <img id="heart" src="heart.png" alt="Heart">
+        <p class="info">
+            Welcome to use the wellness diary! It's completely free, but you need to first create 
+            a new user account if you haven't already done so, and then log in. Hopefully, 
+            the wellness diary will help you on your own wellness journey!
+        </p>>
+    </main>
+    <div class="container">
+        <div id="notificationUserCreated" class="notification">
+            User created! Click login.
+        </div>>
+        <!-- LOGIN FORM -->
+        <div class="form-container">
+            <h3>Login User</h3>
+            <form class="login_form" id="loginForm">
+                <label for="loginUsername">Username</label>
+                <input type="text" id="loginUsername" name="username" placeholder="Enter username">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" name="password" placeholder="Enter password">
+                <input type="submit" value="Login" class="loginuser">
+            </form>
+            <div id="loginResponse"></div>
+            <p>Don't have an account? <a href="#" id="showCreateForm">Create one</a>.</p>
+        </div>
+    
+        <!-- CREATE USER FORM -->
+        <div class="form-container hidden" id="createFormContainer">
+            <h3>Create User</h3>
+            <form class="create_user_form" id="createForm">
+                <label for="createUsername">Username</label>
+                <input type="text" id="createUsername" name="username" placeholder="Enter username" minlength="3" maxlength="20" required>
+                <label for="createPassword">Password</label>
+                <input type="password" id="createPassword" name="password" placeholder="Enter password" minlength="8" required>
+                <label for="createEmail">Email</label>
+                <input type="email" id="createEmail" name="email" placeholder="Enter email" required>
+                <input type="submit" value="Create User" class="createuser">
+            </form>
+            <div id="createUserResponse"></div>
+            <p>Already have an account? <a href="#" id="showLoginForm">Login</a>.</p>
+        </div>
+    </div>
+
+        <!-- USER INFO -->
+        <div class="form-container">
+            <h3>User Info</h3>
+            <button id="meRequest">Get User Info</button>
+            <div id="meResponse"></div>
+        </div>
+
+        <!-- LOCAL STORAGE -->
+        <div class="form-container">
+            <h3>Local Storage</h3>
+            <button id="clearButton">Clear localStorage</button>
+            <code id="clearResponse"></code>
+        </div>
+    </div>
+    
+    <script type="module" src="/index.js"></script>
+</body>
+</html>

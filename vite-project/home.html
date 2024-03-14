@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <title>Vite App</title>
+  </head>
+  <body>
+    <ul>
+      <li><a href="home.html">HealthDiary</a></li>
+      <li><a href="profile.html">Profile & Users</a></li>
+      <li><a href="about.html">About</a></li>
+      <div class="user">Logged in as user <span id="name">NIMI TÄHÄN</span></div>
+      <li style="float: right" class="active logout"><a href="">Logout</a></li>
+    </ul>
+
+    <div class="banner">
+      <!-- IMAGE FROM FREEPIK
+      https://www.freepik.com/free-photo/top-view-notebook-with-plant_8132324.htm#fromView=
+      search&page=2&position=3&uuid=58343d17-897e-449f-8740-2c9077331bc6 -->
+        <img src="banner.jpg" alt="Banner image">
+    </div>
+
+    
+    <div id="app">
+      <div class="notificationWelcome">NIMI TÄHÄN!</div>
+      <div class="forms">
+        <div style="flex: 1">
+
+          <select id="formSelector">
+            <option value="" selected disabled hidden>Select an option</option>
+            <option value="entry">Add a new diary entry</option>
+            <option value="activity">Add a new activity entry</option>
+            <option value="measurements">Add a new measurement entry</option>
+          </select>
+          
+          <div class="forms-container">
+            <div class="entry-form">
+              <h3>Add a new diary entry</h3>
+              <form id="entryForm">
+                <label for="entryDate">Entry Date:</label>
+                <input type="date" id="entryDate" name="entryDate" required><br><br>
+                <label for="mood">Mood:</label>
+                <input type="text" id="mood" name="mood" required data-placeholder="Min 3, max 20 cha"><br><br>
+                <label for="weight">Weight:</label>
+                <input type="number" id="weight" name="weight" required data-placeholder="Number between 30 and 200"><br><br>
+                <label for="sleepHours">Sleep Hours:</label>
+                <input type="number" id="sleepHours" name="sleepHours" required data-placeholder="Number between 0 and 24"><br><br>
+                <label for="notes">Notes:</label>
+                <textarea id="notes" name="notes" required data-placeholder="Min 3, max 300 characters"></textarea><br><br>
+                <button type="submit" class="add-entry">Add entry</button>
+              </form>
+            </div>
+    
+            <div class="activity-form">
+              <h3>Add a new activity entry</h3>
+              <form id="activityForm">
+                <label for="activityType">Activety type:</label>
+                <input type="text" id="activityType" name="activityType" required data-placeholder="Min 3, max 20 characters"><br><br>
+                <label for="intensity">Intensity:</label>
+                <input type="number" id="intensity" name="intensity" required data-placeholder="Number between 1 and 10"><br><br>
+                <label for="duration">Duration (HH:MM:SS):</label>
+                <input type="text" id="duration" name="duration" required pattern="\d{2}:\d{2}:\d{2}" data-placeholder="HH:MM:SS"><br><br>
+                <button type="submit" class="add-activity">Add activity</button>
+              </form>
+            </div>
+    
+            <div class="measurements-form">
+              <h3>Add a new measurement entry</h3>
+              <form id="measurementForm">
+                <label for="measurementType">Measurement type:</label>
+                <input type="text" id="measurementType" name="measurementType" required data-placeholder="Min 3, max 30 characters"><br><br>
+                <label for="value">Value:</label>
+                <input type="number" id="value" name="value" required data-placeholder="Min 3, max 20 characters"><br><br>
+                <label for="unit">Unit:</label>
+                <input type="text" id="unit" name="unit" required data-placeholder="Max 10 characters"><br><br>
+                <label for="notesMeasurement">Notes:</label>
+                <input type="text" id="notesMeasurement" name="notesMeasurement" required data-placeholder="Min 3, max 300 characters"><br><br>
+                <button type="submit" class="add-measurement">Add measurement</button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <div style="flex: 1">
+
+          <h3>ENTRIES</h3>
+    
+          <p>Voit hakea päiväkirjamerkintäsi painamalla alla olevaa nappia. </p>
+          <button class="get_entry">Click and search your diary entries:</button>
+          <table class="entry-table">
+            <thead>
+              <tr>
+                <th>Created At</th>
+                <th>Entry Date</th>
+                <th>Mood</th>
+                <th>Notes</th>
+                <th>Sleep Hours</th>
+                <th>Weight</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Tähän lisätään päiväkirjamerkinnät -->
+            </tbody>
+          </table>
+          
+      
+          <p>Voit hakea aktiviteettejasi painamalla alla olevaa nappia. </p>
+          <button class="get_activity">Click and search your activities:</button>
+          <table class="activity-table">
+            <thead>
+              <tr>
+                <th>Created At</th>
+                <th>Activity Type</th>
+                <th>Intensity</th>
+                <th>Duration</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Tähän lisätään aktiviteetit -->
+            </tbody>
+          </table>
+      
+            <p>Voit hakea measurements-datasi painamalla alla olevaa nappia. </p>
+            <button class="get_measurements">Click and search your measurements:</button>
+            <table class="measurements-table">
+              <thead>
+                <tr>
+                  <th>Measurement Time</th>
+                  <th>Measurement Type</th>
+                  <th>Value</th>
+                  <th>Unit</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Tähän lisätään measurements merkinnät -->
+              </tbody>
+            </table>
+          </div>
+        
+        <div id="notification" class="notification">
+          Diary entry added successfully!
+        </div>
+        <div id="notificationActivity" class="notification">
+          Activity entry added successfully!
+        </div>
+        <div id="notificationMeasurement" class="notification">
+          Measurement entry added successfully!
+        </div>
+      </div>
+    </div>
+    
+
+    <dialog class="info_dialog">
+      <p>
+        <!-- tänne haetaan yksittäinen valittu käyttäjät -->
+        <!-- <div>UserID: <span>Id</span></div>
+        <div>UserName: <span>Username</span></div>
+        <div>Email: <span>Email</span></div>
+        <div>Role: <span>Role</span></div> -->
+      </p>
+      <button autofocus>Close</button>
+    </dialog>
+
+
+    <script type="module" src="/home.js"></script>
+
+  </body>
+</html>

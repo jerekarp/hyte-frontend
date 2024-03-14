@@ -9,10 +9,6 @@ createUser.addEventListener('click', async (evt) => {
 
   const url = 'http://127.0.0.1:3000/api/users';
 
-  // # Create user
-  // POST http://127.0.0.1:3000/api/users
-  // content-type: application/json
-
   const form = document.querySelector('.create_user_form');
 
   // Tarkistetaan, onko form validi
@@ -22,13 +18,6 @@ createUser.addEventListener('click', async (evt) => {
   }
 
   const username = form.querySelector('input[name=username]').value;
-
-  // kokeillaan ensin kovakoodattuna
-  // const body = {
-  //   username: 'testii',
-  //   password: 'testii',
-  //   email: 'testii@testii.fi',
-  // };
 
   const data = {
     username: username,
@@ -44,19 +33,38 @@ createUser.addEventListener('click', async (evt) => {
     body: JSON.stringify(data), // body data type must match "Content-Type" header
   };
 
-  // fetchData(url, options).then((data) => {
-  //   // käsitellään fetchData funktiosta tullut JSON
-  //   console.log(data);
-  // });
-
-  // parempi ehkä käyttää samaa muotoilua
   try {
     const responseData = await fetchData(url, options);
     console.log(responseData);
+    const notification = document.getElementById('notificationUserCreated');
+      notification.classList.add('show-notification');
+      setTimeout(() => {
+        notification.classList.remove('show-notification');
+      }, 4000);
+    form.reset();
   } catch (error) {
     console.error(error);
   }
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+  const showCreateForm = document.getElementById("showCreateForm");
+  const showLoginForm = document.getElementById("showLoginForm");
+  const createFormContainer = document.getElementById("createFormContainer");
+  const loginFormContainer = document.querySelector(".form-container:not(#createFormContainer)");
+
+  showCreateForm.addEventListener("click", () => {
+    createFormContainer.classList.remove("hidden");
+    loginFormContainer.classList.add("hidden");
+  });
+
+  showLoginForm.addEventListener("click", () => {
+    createFormContainer.classList.add("hidden");
+    loginFormContainer.classList.remove("hidden");
+  });
+});
+
+
 
 // haetaan nappi josta haetaan formi ja logataan sisään
 // tästä saadaan TOKEN
@@ -109,7 +117,7 @@ loginUser.addEventListener('click', async (evt) => {
       localStorage.setItem('name', data.user.username);
       setTimeout(function () {
         window.location.href = 'home.html';
-      }, 3000);
+      }, 2000);
     }
   });
 });
