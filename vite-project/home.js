@@ -14,7 +14,6 @@ function formatDateString(dateString) {
   return date.toLocaleString("fi-FI", options);
 }
 
-
 // Päiväkirjamerkintöjen tableen data
 const PAGE_SIZE = 7;
 let currentPage = 1;
@@ -26,7 +25,7 @@ getEntryButton.addEventListener("click", () => {
 });
 
 async function getEntries() {
-  const url = "http://localhost:3000/api/entries";
+  const url = "/api/entries";
   let token = localStorage.getItem("token");
   const options = {
     method: "GET",
@@ -66,6 +65,9 @@ function createEntryTable(entries) {
   entriesOnPage.forEach((entry) => {
     const row = document.createElement("tr");
 
+    const entryIdCell = document.createElement("td");
+    entryIdCell.textContent = entry.entry_id;
+
     const createdCell = document.createElement("td");
     createdCell.textContent = formatDateString(entry.created_at);
 
@@ -84,6 +86,7 @@ function createEntryTable(entries) {
     const weightCell = document.createElement("td");
     weightCell.textContent = entry.weight;
 
+    row.appendChild(entryIdCell);
     row.appendChild(createdCell);
     row.appendChild(entryDateCell);
     row.appendChild(moodCell);
@@ -117,7 +120,7 @@ let currentActivitiesPage = 1;
 let totalActivitiesPages = 1;
 
 const getActivitiesButton = document.querySelector(".get_activity");
-getActivitiesButton .addEventListener("click", () => {
+getActivitiesButton.addEventListener("click", () => {
   getActivities();
 });
 
@@ -131,7 +134,7 @@ async function getActivities() {
     },
   };
 
-  const url = `http://localhost:3000/api/activities`;
+  const url = `/api/activities`;
 
   fetchData(url, options)
     .then((data) => {
@@ -170,6 +173,9 @@ function createActivitiesTable(activities) {
   activitiesOnPage.forEach((activity) => {
     const row = document.createElement("tr");
 
+    const activityIdCell = document.createElement("td");
+    activityIdCell.textContent = activity.activity_id;
+
     const createdCell = document.createElement("td");
     createdCell.textContent = formatDateString(activity.created_at); // Muotoillaan päivämäärä
 
@@ -182,6 +188,7 @@ function createActivitiesTable(activities) {
     const durationCell = document.createElement("td");
     durationCell.textContent = activity.duration;
 
+    row.appendChild(activityIdCell);
     row.appendChild(createdCell);
     row.appendChild(activityTypeCell);
     row.appendChild(intensityCell);
@@ -227,7 +234,7 @@ async function getMeasurements() {
     },
   };
 
-  const url = `http://localhost:3000/api/measurements`;
+  const url = `/api/measurements`;
 
   fetchData(url, options)
     .then((data) => {
@@ -267,7 +274,12 @@ function createMeasurementTable(measurements) {
     const row = document.createElement("tr");
 
     const measurementTimeCell = document.createElement("td");
-    measurementTimeCell.textContent = formatDateString(measurement.measurement_time);
+    measurementTimeCell.textContent = formatDateString(
+      measurement.measurement_time
+    );
+
+    const measurementIdCell = document.createElement("td");
+    measurementIdCell.textContent = measurement.measurement_id;
 
     const measurementTypeCell = document.createElement("td");
     measurementTypeCell.textContent = measurement.measurement_type;
@@ -281,6 +293,7 @@ function createMeasurementTable(measurements) {
     const notesCell = document.createElement("td");
     notesCell.textContent = measurement.notes;
 
+    row.appendChild(measurementIdCell);
     row.appendChild(measurementTimeCell);
     row.appendChild(measurementTypeCell);
     row.appendChild(valueCell);
@@ -307,7 +320,6 @@ function renderMeasurementPagination() {
   }
 }
 
-
 // Diary entry formi
 const postEntryButton = document.querySelector(".add-entry");
 postEntryButton.addEventListener("click", async (event) => {
@@ -325,7 +337,7 @@ postEntryButton.addEventListener("click", async (event) => {
 
   if (!form.checkValidity()) {
     form.reportValidity();
-    return; 
+    return;
   }
 
   const options = {
@@ -343,7 +355,7 @@ postEntryButton.addEventListener("click", async (event) => {
     }),
   };
 
-  const url = `http://localhost:3000/api/entries`;
+  const url = `/api/entries`;
 
   fetchData(url, options)
     .then((data) => {
@@ -365,7 +377,6 @@ postEntryButton.addEventListener("click", async (event) => {
     });
 });
 
-
 // Activity formi
 const postActivityButton = document.querySelector(".add-activity");
 postActivityButton.addEventListener("click", async (event) => {
@@ -380,7 +391,7 @@ postActivityButton.addEventListener("click", async (event) => {
 
   if (!form.checkValidity()) {
     form.reportValidity();
-    return; 
+    return;
   }
 
   const options = {
@@ -396,7 +407,7 @@ postActivityButton.addEventListener("click", async (event) => {
     }),
   };
 
-  const url = `http://localhost:3000/api/activities`;
+  const url = `/api/activities`;
 
   fetchData(url, options)
     .then((data) => {
@@ -406,7 +417,7 @@ postActivityButton.addEventListener("click", async (event) => {
       document.getElementById("activityType").value = "";
       document.getElementById("intensity").value = "";
       document.getElementById("duration").value = "";
-      
+
       setTimeout(() => {
         notification.classList.remove("show-notification");
       }, 3000);
@@ -432,7 +443,7 @@ postMeasurementButton.addEventListener("click", async (event) => {
 
   if (!form.checkValidity()) {
     form.reportValidity();
-    return; 
+    return;
   }
 
   const options = {
@@ -449,8 +460,8 @@ postMeasurementButton.addEventListener("click", async (event) => {
     }),
   };
 
-  const url = `http://localhost:3000/api/measurements`;
-  
+  const url = `/api/measurements`;
+
   fetchData(url, options)
     .then((data) => {
       const notification = document.getElementById("notificationMeasurement");
@@ -468,10 +479,9 @@ postMeasurementButton.addEventListener("click", async (event) => {
     });
 });
 
-
 // Funktio, joka näyttää sivustolla kirjautuneen käyttäjän käyttäjänimen
 async function showUserName() {
-  const url = "http://localhost:3000/api/auth/me";
+  const url = "/api/auth/me";
   let token = localStorage.getItem("token");
 
   const options = {
@@ -496,45 +506,45 @@ async function showGreeting(username) {
   let greeting;
 
   if (currentHour >= 5 && currentHour < 12) {
-      greeting = "Good morning";
+    greeting = "Good morning";
   } else if (currentHour >= 12 && currentHour < 18) {
-      greeting = "Good afternoon";
+    greeting = "Good afternoon";
   } else {
-      greeting = "Good evening";
+    greeting = "Good evening";
   }
 
   const notification = document.querySelector(".notificationWelcome");
   notification.innerHTML = `${greeting}, dear diary user, <strong>${username}</strong>!`;
 
-  notification.classList.add('show-notification');
-  
+  notification.classList.add("show-notification");
+
   setTimeout(() => {
-      notification.classList.remove('show-notification');
+    notification.classList.remove("show-notification");
   }, 5000);
 }
 
 showGreeting();
 
-
 // Näytetään vain placeholderit käyttäjälle, kun hän valitsee input fieldin, johon hän on syöttämässä tietoja
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
   // Haetaan kaikki input-kentät
-  var inputFields = document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea');
+  var inputFields = document.querySelectorAll(
+    'input[type="text"], input[type="number"], input[type="date"], textarea'
+  );
 
   // Lisätään tapahtumankäsittelijä jokaiselle input-kentälle
-  inputFields.forEach(function(input) {
-    input.addEventListener('focus', function() {
+  inputFields.forEach(function (input) {
+    input.addEventListener("focus", function () {
       // Näytä placeholder-teksti vain, jos käyttäjä klikkaa kysymysmerkin kohdalle
-      input.setAttribute('placeholder', input.getAttribute('data-placeholder'));
+      input.setAttribute("placeholder", input.getAttribute("data-placeholder"));
     });
 
-    input.addEventListener('blur', function() {
+    input.addEventListener("blur", function () {
       // Piilota placeholder-teksti, kun käyttäjä poistuu kentästä
-      input.removeAttribute('placeholder');
+      input.removeAttribute("placeholder");
     });
   });
 });
-
 
 // logataan ulos kun painetaan logout nappulaa
 document.querySelector(".logout").addEventListener("click", logOut);
@@ -547,18 +557,188 @@ function logOut(evt) {
 
 // Formien selectori
 // Alussa piilotetaan kaikki lomakkeet
-document.querySelectorAll('.forms-container > div').forEach(form => {
-  form.style.display = 'none';
+document.querySelectorAll(".forms-container > div").forEach((form) => {
+  form.style.display = "none";
 });
 
-// Kun valitsinta muutetaan, näytetään valitun lomake
-document.getElementById('formSelector').addEventListener('change', function() {
+document.getElementById("formSelector").addEventListener("change", function () {
   const selectedForm = this.value;
-  const forms = document.querySelectorAll('.forms-container > div');
-  
+  const forms = document.querySelectorAll(".forms-container > div");
+
   // Piilotetaan kaikki lomakkeet
-  forms.forEach(form => form.style.display = 'none');
-  
+  forms.forEach((form) => (form.style.display = "none"));
+
   // Näytetään valittu lomake
-  document.querySelector(`.${selectedForm}-form`).style.display = 'block';
+  document.querySelector(`.${selectedForm}-form`).style.display = "block";
+});
+
+
+document.getElementById("updateFormSelector").addEventListener("change", function () {
+  const selectedForm = this.value;
+  const forms = document.querySelectorAll(".forms-container > div");
+
+  forms.forEach((form) => (form.style.display = "none"));
+  
+  document.querySelector(`.update${selectedForm.charAt(0).toUpperCase() + selectedForm.slice(1)}-form`).style.display = "block";
+});
+
+
+// Update diary entry form
+const updateEntryButton = document.querySelector(".update-entry");
+updateEntryButton.addEventListener("click", async (event) => {
+  event.preventDefault();
+
+  let token = localStorage.getItem("token");
+
+  const entryId = document.getElementById("updateEntryId").value;
+  const entryDate = document.getElementById("updateEntryDate").value;
+  const mood = document.getElementById("updateMood").value;
+  const weight = document.getElementById("updateWeight").value;
+  const sleepHours = document.getElementById("updateSleepHours").value;
+  const notes = document.getElementById("updateNotes").value;
+
+  const form = document.getElementById("updateEntryForm");
+
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  const options = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify({
+      entry_date: entryDate,
+      mood: mood,
+      weight: weight,
+      sleep_hours: sleepHours,
+      notes: notes,
+    }),
+  };
+
+  const url = `/api/entries/${entryId}`;
+
+  fetchData(url, options)
+  .then((data) => {
+    if (data.message === "Entry data updated") {
+      const notification = document.getElementById("notification");
+      notification.classList.add("show-notification");
+      setTimeout(() => {
+        notification.classList.remove("show-notification");
+      }, 3000);
+    } else {
+    }
+  })
+  .catch((error) => {
+    alert("Error updating entry: Please ensure all fields meet the required criteria");
+    console.error("Error updating entry:", error);
+  });
+});
+
+// Update activity entry form
+const updateActivityButton = document.querySelector(".update-activity");
+updateActivityButton.addEventListener("click", async (event) => {
+  event.preventDefault();
+
+  let token = localStorage.getItem("token");
+
+  const activityId = document.getElementById("updateActivityId").value;
+  const activityType = document.getElementById("updateActivityType").value;
+  const intensity = document.getElementById("updateIntensity").value;
+  const duration = document.getElementById("updateDuration").value;
+
+  const form = document.getElementById("updateActivityForm");
+
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  const options = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify({
+      activity_type: activityType,
+      intensity: intensity,
+      duration: duration,
+    }),
+  };
+
+  const url = `/api/activities/${activityId}`;
+
+  fetchData(url, options)
+  .then((data) => {
+    if (data.message === "Activity data updated") {
+      const notification = document.getElementById("notificationActivity");
+      notification.classList.add("show-notification");
+      setTimeout(() => {
+        notification.classList.remove("show-notification");
+      }, 3000);
+    } else {
+    }
+  })
+  .catch((error) => {
+    alert("Error updating entry: Please ensure all fields meet the required criteria");
+    console.error("Error updating activity:", error);
+  });
+});
+
+
+
+// Update measurement entry form
+const updateMeasurementButton = document.querySelector(".update-measurement");
+updateMeasurementButton.addEventListener("click", async (event) => {
+  event.preventDefault();
+
+  let token = localStorage.getItem("token");
+
+  const measurementId = document.getElementById("updateMeasurementId").value;
+  const measurementType = document.getElementById("updateMeasurementType").value;
+  const valueMeas = document.getElementById("updateValue").value;
+  const unit = document.getElementById("updateUnit").value;
+  const notesMeasurement = document.getElementById("updateNotesMeasurement").value;
+
+  const form = document.getElementById("updateMeasurementForm");
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return;
+  }
+
+  const options = {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + token,
+    },
+    body: JSON.stringify({
+      measurement_type: measurementType,
+      value: valueMeas,
+      unit: unit,
+      notes: notesMeasurement,
+    }),
+  };
+
+  const url = `/api/measurements/${measurementId}`;
+
+  fetchData(url, options)
+  .then((data) => {
+    if (data.message === "Measurements data updated") {
+      const notification = document.getElementById("notificationMeasurement");
+      notification.classList.add("show-notification");
+      setTimeout(() => {
+        notification.classList.remove("show-notification");
+      }, 3000);
+    } else {
+    }
+  })
+  .catch((error) => {
+    alert("Error updating entry: Please ensure all fields meet the required criteria");
+    console.error("Error updating measurement:", error);
+  });
 });

@@ -1,4 +1,5 @@
-import { fetchData } from "/fetch.js";12
+import { fetchData } from "/fetch.js";
+12;
 
 // haetaan kaikki käyttäjät ja luodaan niistä taulukko
 
@@ -10,7 +11,7 @@ const allButton = document.querySelector(".get_users");
 allButton.addEventListener("click", getUsers);
 
 async function getUsers() {
-  const url = "http://localhost:3000/api/users";
+  const url = "/api/users";
   let token = localStorage.getItem("token");
   document.querySelector(".get_users").style.display = "none";
   const options = {
@@ -88,7 +89,6 @@ function renderPagination() {
   }
 }
 
-
 // Haetaan dialogi yksittäisille tiedoille
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog
 const dialog = document.querySelector(".info_dialog");
@@ -101,8 +101,8 @@ closeButton.addEventListener("click", () => {
 async function getUser(evt) {
   // haetaan data-attribuutin avulla id, tämä nopea tapa
   const id = evt.target.attributes["data-id"].value;
-  
-  const url = `http://localhost:3000/api/users/${id}`;
+
+  const url = `/api/users/${id}`;
 
   let token = localStorage.getItem("token");
   const options = {
@@ -112,10 +112,8 @@ async function getUser(evt) {
     },
   };
   fetchData(url, options).then((data) => {
-    console.log(data);
     // Avaa modaali
     dialog.showModal();
-    console.log("in modal");
     dialog.querySelector("p").innerHTML = `
           <div>User ID: <span>${data.user_id}</span></div>
           <div>User Name: <span>${data.username}</span></div>
@@ -126,7 +124,7 @@ async function getUser(evt) {
 }
 
 async function showUserName() {
-  const url = "http://localhost:3000/api/auth/me";
+  const url = "/api/auth/me";
   let token = localStorage.getItem("token");
 
   const options = {
@@ -136,7 +134,6 @@ async function showUserName() {
     },
   };
   fetchData(url, options).then((data) => {
-    console.log(data);
     const username = data.user.username;
     document.getElementById("name").innerHTML = username;
   });
@@ -146,70 +143,105 @@ showUserName();
 
 
 async function deleteUser(evt) {
-
   const id = evt.target.attributes["data-id"].value;
+  const url = `/api/users/${id}`;
+  const token = localStorage.getItem("token");
+  const isAdminUser = await isAdmin(); // Check admin rights
 
-  const url = `http://localhost:3000/api/users/${id}`;
-  let token = localStorage.getItem("token");
-  const options = {
-    method: "DELETE",
-    headers: {
-      Authorization: "Bearer: " + token,
-    },
-  };
+  const deleteDialog = document.querySelector(".delete_dialog");
 
-  const deleteDialog = document.querySelector('.delete_dialog');
-
-  deleteDialog.querySelector("p").innerText = `Are you sure that you want to delete user ID: ${id}?`;
-
+  deleteDialog.querySelector(
+    "p"
+  ).innerText = `Are you sure that you want to delete user ID: ${id}?`;
   deleteDialog.showModal();
 
-  deleteDialog.querySelector('.close_button').addEventListener('click', async function() {
-    deleteDialog.close();
-  });
+  deleteDialog
+    .querySelector(".close_button")
+    .addEventListener("click", function () {
+      deleteDialog.close();
+    });
 
-  deleteDialog.querySelector('.delete_button').addEventListener('click', async function() {
+  deleteDialog
+    .querySelector(".delete_button")
+    .addEventListener("click", async function () {
+      if (isAdminUser === 'admin' || id === localStorage.getItem("user_id")) {
+        try {
+          const options = {
+            method: "DELETE",
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          };
 
-    // Tarkistetaan, onko käyttäjä admin tai poistaa oman käyttäjänsä
-    if (id === localStorage.getItem("user_id") || isAdmin()) {
-      try {
-        const result = await fetchData(url, options);
-        getUsers();
-      } catch (error) {
-        console.error('Error deleting user:', error);
+          const result = await fetchData(url, options);
 
+          // Check if the user is deleting their own account
+          if (id === localStorage.getItem("user_id")) {
+            const dialogText = deleteDialog.querySelector("p");
+            deleteDialog.style.border = '3px solid rgb(85, 187, 27)'; 
+            dialogText.innerText = "Your account is now deleted, logging out in 3 seconds..."
+            dialogText.style.fontWeight = "bold";
+            dialogText.style.fontSize = "25px";
+            dialogText.style.color = 'rgb(85, 187, 27)';
+            setTimeout(() => {
+              dialogText.innerText = "";
+              deleteDialog.style.border = "";
+              dialogText.style.fontWeight = "";
+              dialogText.style.fontSize = "";
+              dialogText.style.color = "";
+              deleteDialog.close();
+              logOutIfUserDeleted(); // Logout if the user deletes their own account
+            }, 3500);
+            return;
+          }
+
+          const dialogText2 = deleteDialog.querySelector("p");
+          deleteDialog.style.border = '3px solid rgb(85, 187, 27)'; 
+          dialogText2.innerText = "User deleted successfully!";
+          dialogText2.style.fontWeight = "bold";
+          dialogText2.style.fontSize = "20px";
+          dialogText2.style.color = "rgb(85, 187, 27)";
+          setTimeout(() => {
+            dialogText2.innerText = "";
+            deleteDialog.style.border = "";
+            dialogText2.style.fontWeight = "";
+            dialogText2.style.fontSize = "";
+            dialogText2.style.color = "";
+            deleteDialog.close();
+          }, 2000);
+          return;
+        } catch (error) {
+          console.error("Error deleting user:", error);
+        }
+      } else {
+        const dialogText3 = deleteDialog.querySelector("p");
+        deleteDialog.style.border = '3px solid rgb(250, 3, 3)'; 
+        dialogText3.innerText = "Error deleting user! Only admins can delete other users!";
+        dialogText3.style.fontWeight = "bold";
+        dialogText3.style.fontSize = "20px";
+        setTimeout(() => {
+          dialogText3.innerText = "";
+          deleteDialog.style.border = "";
+          dialogText3.style.fontWeight = "";
+          dialogText3.style.fontSize = "";
+          deleteDialog.close();
+        }, 4000);
       }
-    } else {
-      deleteDialog.style.border = '3px solid rgb(250, 3, 3)'; 
-      const dialogText = deleteDialog.querySelector("p");
-      dialogText.innerText = 'Only admins can delete other users!';
-      dialogText.style.fontWeight = 'bold';
-      dialogText.style.fontSize = '20px';
-      setTimeout(() => {
-        deleteDialog.style.border = '';
-        dialogText.innerText = '';
-        dialogText.style.fontWeight = '';
-        dialogText.style.fontSize = '';
-        deleteDialog.close();
-    }, 4000);
-    }
-  }); // Tässä suljetaan deleteDialog.addEventListener
+    });
 }
 
 
-// Tarkistus admin-oikeuksista
-function isAdmin() {
-  let user = JSON.parse(localStorage.getItem("user"));
-  return user && user.user_level === "admin";
+async function isAdmin() {
+  let user = localStorage.getItem("user_level");
+  return user;
 }
-
 
 document.querySelector(".update_user").addEventListener("click", updateUser);
 
 async function updateUser(evt) {
   evt.preventDefault();
 
-  const url = "http://localhost:3000/api/users/";
+  const url = "/api/users/";
   let token = localStorage.getItem("token");
 
   // Haetaan lomakkeen tiedot
@@ -221,7 +253,7 @@ async function updateUser(evt) {
 
   if (!form.checkValidity()) {
     form.reportValidity();
-    return; 
+    return;
   }
 
   const userData = {
@@ -240,7 +272,9 @@ async function updateUser(evt) {
   };
   fetchData(url, options).then((data) => {
     // Näytä ilmoitus käyttäjän päivityksen jälkeen
-    const notificationUserUpdated = document.getElementById("notificationUserUpdated");
+    const notificationUserUpdated = document.getElementById(
+      "notificationUserUpdated"
+    );
     notificationUserUpdated.classList.add("show-notification");
     setTimeout(() => {
       notificationUserUpdated.classList.remove("show-notification");
@@ -252,7 +286,6 @@ async function updateUser(evt) {
   });
 }
 
-
 // logataan ulos kun painetaan logout nappulaa
 
 document.querySelector(".logout").addEventListener("click", logOut);
@@ -260,5 +293,16 @@ document.querySelector(".logout").addEventListener("click", logOut);
 function logOut(evt) {
   evt.preventDefault();
   localStorage.removeItem("token");
+  localStorage.removeItem("user_id");
+  localStorage.removeItem("name");
+  localStorage.removeItem("user_level");
+  window.location.href = "index.html";
+}
+
+function logOutIfUserDeleted() {
+  localStorage.removeItem("token");
+  localStorage.removeItem("user_id");
+  localStorage.removeItem("name");
+  localStorage.removeItem("user_level");
   window.location.href = "index.html";
 }

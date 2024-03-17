@@ -6,7 +6,7 @@ const createUser = document.querySelector('.createuser');
 createUser.addEventListener('click', async (evt) => {
   evt.preventDefault();
 
-  const url = 'http://localhost:3000/api/users';
+  const url = '/api/users';
 
   const form = document.querySelector('.create_user_form');
 
@@ -99,7 +99,7 @@ const loginUser = document.querySelector('.loginuser');
 loginUser.addEventListener('click', async (evt) => {
   evt.preventDefault();
 
-  const url = 'http://localhost:3000/api/auth/login';
+  const url = '/api/auth/login';
 
   const form = document.querySelector('.login_form');
 

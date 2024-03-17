@@ -6,7 +6,7 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <title>HealthDiary</title>
   </head>
-  <body>
+ <body>
     <ul>
       <li><a href="home.html">HealthDiary</a></li>
       <li><a href="profile.html">Profile & Users</a></li>
@@ -29,11 +29,19 @@
         <div style="flex: 1">
 
           <select id="formSelector">
-            <option value="" selected disabled hidden>Select an option</option>
+            <option value="" selected disabled hidden>Add entry</option>
             <option value="entry">Add a new diary entry</option>
             <option value="activity">Add a new activity entry</option>
             <option value="measurements">Add a new measurement entry</option>
           </select>
+
+          <select id="updateFormSelector">
+            <option value="" selected disabled hidden>Update entry</option>
+            <option value="entry">Update diary entry</option>
+            <option value="activity">Update activity entry</option>
+            <option value="measurement">Update measurement entry</option>
+          </select>
+        
           
           <div class="forms-container">
             <div class="entry-form">
@@ -80,8 +88,59 @@
                 <button type="submit" class="add-measurement">Add measurement</button>
               </form>
             </div>
+            <div class="updateEntry-form">
+              <h3>Update diary entry</h3>
+              <form id="updateEntryForm">
+                <label for="updateEntryId">Entry ID:</label>
+                <input type="text" id="updateEntryId" name="updateEntryId" required data-placeholder="ID of entry"><br><br>
+                <label for="updateEntryDate">Entry Date:</label>
+                <input type="date" id="updateEntryDate" name="updateEntryDate" required><br><br>
+                <label for="updateMood">Mood:</label>
+                <input type="text" id="updateMood" name="updateMood" required data-placeholder="Min 3, max 20 cha"><br><br>
+                <label for="updateWeight">Weight:</label>
+                <input type="number" id="updateWeight" name="updateWeight" required data-placeholder="Number between 30 and 200"><br><br>
+                <label for="updateSleepHours">Sleep Hours:</label>
+                <input type="number" id="updateSleepHours" name="updateSleepHours" required data-placeholder="Number between 0 and 24"><br><br>
+                <label for="updateNotes">Notes:</label>
+                <textarea id="updateNotes" name="updateNotes" required data-placeholder="Min 3, max 300 characters"></textarea><br><br>
+                <button type="submit" class="update-entry">Update entry</button>
+              </form>         
+            </div>
+      
+            <div class="updateActivity-form">
+              <h3>Update activity entry</h3>
+              <form id="updateActivityForm">
+                <label for="updateActivityId">Activity ID:</label>
+                <input type="text" id="updateActivityId" name="activityId" required data-placeholder="ID of activity"><br><br>
+                <label for="updateActivityType">Activity type:</label>
+                <input type="text" id="updateActivityType" name="activityType" required data-placeholder="Min 3, max 20 characters"><br><br>
+                <label for="updateIntensity">Intensity:</label>
+                <input type="number" id="updateIntensity" name="intensity" required data-placeholder="Number between 1 and 10"><br><br>
+                <label for="updateDuration">Duration (HH:MM:SS):</label>
+                <input type="text" id="updateDuration" name="duration" required pattern="\d{2}:\d{2}:\d{2}" data-placeholder="HH:MM:SS"><br><br>
+                <button type="submit" class="update-activity">Update activity</button>
+              </form>
+            </div>
+            <div class="updateMeasurement-form">
+              <h3>Update measurement entry</h3>
+              <form id="updateMeasurementForm">
+                <label for="updateMeasurementId">Measurement ID:</label>
+                <input type="text" id="updateMeasurementId" name="updateMeasurementId" required data-placeholder="ID of measurement"><br><br>
+                <label for="updateMeasurementType">Measurement type:</label>
+                <input type="text" id="updateMeasurementType" name="updateMeasurementType" required data-placeholder="Min 3, max 30 characters"><br><br>
+                <label for="updateValue">Value:</label>
+                <input type="number" id="updateValue" name="updateValue" required data-placeholder="Min 3, max 20 characters"><br><br>
+                <label for="updateUnit">Unit:</label>
+                <input type="text" id="updateUnit" name="updateUnit" required data-placeholder="Max 10 characters"><br><br>
+                <label for="updateNotesMeasurement">Notes:</label>
+                <input type="text" id="updateNotesMeasurement" name="updateNotesMeasurement" required data-placeholder="Min 3, max 300 characters"><br><br>
+                <button type="submit" class="update-measurement">Update measurement</button>
+              </form>
+            </div>
           </div>
         </div>
+
+  
 
         <div style="flex: 1">
 
@@ -89,6 +148,7 @@
           <table class="entry-table">
             <thead>
               <tr>
+                <th>Entry Id</th>
                 <th>Created At</th>
                 <th>Entry Date</th>
                 <th>Mood</th>
@@ -102,7 +162,7 @@
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="6" class="pagination-container">
+                <td colspan="7" class="pagination-container">
                   <button class="get_entry">Search diary entries</button>
                   <div class="pagination"></div>
                 </td>
@@ -114,6 +174,7 @@
           <table class="activity-table">
             <thead>
               <tr>
+                <th>Activity Id</th>
                 <th>Created At</th>
                 <th>Activity Type</th>
                 <th>Intensity</th>
@@ -124,7 +185,7 @@
               <!-- Tähän lisätään aktiviteetit -->
             </tbody>
             <tr>
-              <td colspan="4" class="pagination-container">
+              <td colspan="5" class="pagination-container">
                 <button class="get_activity">Search activity entries</button>
                 <div class="activity-pagination"></div>
               </td>
@@ -135,6 +196,7 @@
           <table class="measurements-table">
             <thead>
               <tr>
+                <th>Measurement Id</th>
                 <th>Measurement Time</th>
                 <th>Measurement Type</th>
                 <th>Value</th>
@@ -146,7 +208,7 @@
               <!-- Tähän lisätään mittausmerkinnät -->
             </tbody>
             <tr>
-              <td colspan="5" class="pagination-container">
+              <td colspan="6" class="pagination-container">
                 <button class="get_measurements">Search measurements</button>
                 <div class="measurement-pagination"></div>
               </td>
@@ -162,7 +224,6 @@
         <div id="notificationMeasurement" class="notification">
           Measurement entry added successfully!
         </div>
-      </div>
       </div>
     </div>
     

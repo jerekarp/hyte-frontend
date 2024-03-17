@@ -1,7 +1,7 @@
 import { fetchData } from './fetch.js';
 
 async function showUserName() {
-  const url = "http://localhost:3000/api/auth/me";
+  const url = "/api/auth/me";
   let token = localStorage.getItem("token");
 
   const options = {
