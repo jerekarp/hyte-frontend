@@ -1,29 +1,69 @@
 import { fetchData } from "/fetch.js";
 
-// Funktio, joka luo taulukon päiväkirjamerkinnöille
-function createEntryTable(entries) {
-  // Etsi taulukko, johon lisätään päiväkirjamerkinnät
-  const tableBody = document.querySelector(".entry-table tbody");
+// Muuntaa ISO-muotoisen päivämäärän selkeämmäksi muodoksi
+function formatDateString(dateString) {
+  const date = new Date(dateString);
+  const options = {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  };
+  return date.toLocaleString("fi-FI", options);
+}
 
-  // Tyhjennä taulukko ennen kuin lisätään uudet merkinnät
+
+// Päiväkirjamerkintöjen tableen data
+const PAGE_SIZE = 7;
+let currentPage = 1;
+let totalPages = 1;
+
+const getEntryButton = document.querySelector(".get_entry");
+getEntryButton.addEventListener("click", () => {
+  getEntries();
+});
+
+async function getEntries() {
+  const url = "http://localhost:3000/api/entries";
+  let token = localStorage.getItem("token");
+  const options = {
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  };
+  fetchData(url, options).then((data) => {
+    totalPages = Math.ceil(data.length / PAGE_SIZE);
+    renderPagination();
+    createEntryTable(data);
+  });
+}
+
+// Luodaan päiväkirjamerkinnöistä table
+function createEntryTable(entries) {
+  const tableBody = document.querySelector(".entry-table tbody");
   tableBody.innerHTML = "";
 
-  if (entries.length === 0) {
-    // Jos merkintöjä ei ole, näytetään viesti
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const end = start + PAGE_SIZE;
+  const entriesOnPage = entries.slice(start, end);
+
+  if (entriesOnPage.length === 0) {
     const noEntriesRow = document.createElement("tr");
     const noEntriesCell = document.createElement("td");
-    noEntriesCell.setAttribute("colspan", "6"); // Yhdistetään solut rivin leveyden mukaan
+    noEntriesCell.setAttribute("colspan", "6");
     noEntriesCell.textContent =
-      "Ei päiväkirjamerkintöjä vielä, aloita lisäämällä merkintä!";
-    console.log(noEntriesCell.style.color);
+      "No diary entries yet, start by adding an entry!";
     noEntriesRow.appendChild(noEntriesCell);
     tableBody.appendChild(noEntriesRow);
-    return; // Poistutaan funktion suorituksesta, koska ei ole mitään lisättävää
+    return;
   }
 
-  // Käy läpi jokainen päiväkirjamerkintä
-  entries.forEach((entry) => {
-    // Luo uusi rivi (TR)
+  getEntryButton.style.display = "none";
+
+  entriesOnPage.forEach((entry) => {
     const row = document.createElement("tr");
 
     const createdCell = document.createElement("td");
@@ -44,7 +84,6 @@ function createEntryTable(entries) {
     const weightCell = document.createElement("td");
     weightCell.textContent = entry.weight;
 
-    // Lisää solut riville
     row.appendChild(createdCell);
     row.appendChild(entryDateCell);
     row.appendChild(moodCell);
@@ -52,32 +91,83 @@ function createEntryTable(entries) {
     row.appendChild(sleepHoursCell);
     row.appendChild(weightCell);
 
-    // Lisää rivi taulukkoon
     tableBody.appendChild(row);
   });
 }
 
-function createActivityTable(activities) {
-  // Etsi taulukko, johon lisätään aktiviteetit
+// Pagination, sivunumerot päiväkirjamerkintöjen tablelle
+function renderPagination() {
+  const paginationDiv = document.querySelector(".pagination");
+  paginationDiv.innerHTML = "";
+
+  for (let i = 1; i <= totalPages; i++) {
+    const button = document.createElement("button");
+    button.innerText = i;
+    button.addEventListener("click", () => {
+      currentPage = i;
+      getEntries();
+    });
+    paginationDiv.appendChild(button);
+  }
+}
+
+// Activities tableen data
+const ACTIVITIES_PAGE_SIZE = 7;
+let currentActivitiesPage = 1;
+let totalActivitiesPages = 1;
+
+const getActivitiesButton = document.querySelector(".get_activity");
+getActivitiesButton .addEventListener("click", () => {
+  getActivities();
+});
+
+async function getActivities() {
+  let token = localStorage.getItem("token");
+
+  const options = {
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  };
+
+  const url = `http://localhost:3000/api/activities`;
+
+  fetchData(url, options)
+    .then((data) => {
+      totalActivitiesPages = Math.ceil(data.length / ACTIVITIES_PAGE_SIZE);
+      renderActivitiesPagination();
+      createActivitiesTable(data);
+    })
+    .catch((error) => {
+      console.error("Error fetching activities:", error);
+    });
+}
+
+// Luodaan activities merkinnöistä table
+function createActivitiesTable(activities) {
   const tableBody = document.querySelector(".activity-table tbody");
 
-  // Tyhjennä taulukko ennen kuin lisätään uudet aktiviteetit
   tableBody.innerHTML = "";
 
-  if (activities.length === 0) {
+  const start = (currentActivitiesPage - 1) * MEASUREMENT_PAGE_SIZE;
+  const end = start + ACTIVITIES_PAGE_SIZE;
+  const activitiesOnPage = activities.slice(start, end);
+
+  if (activitiesOnPage.length === 0) {
     const noActivitiesRow = document.createElement("tr");
     const noActivitiesCell = document.createElement("td");
-    noActivitiesCell.setAttribute("colspan", "4"); // Yhdistetään solut rivin leveyden mukaan
+    noActivitiesCell.setAttribute("colspan", "5");
     noActivitiesCell.textContent =
-      "Ei aktiviteetteja vielä, aloita lisäämällä aktiviteetti!";
+      "No activities yet, start by adding an activity!";
     noActivitiesRow.appendChild(noActivitiesCell);
     tableBody.appendChild(noActivitiesRow);
     return;
   }
 
-  // Käy läpi jokainen aktiviteetti
-  activities.forEach((activity) => {
-    // Luo uusi rivi (TR)
+  getActivitiesButton.style.display = "none";
+
+  activitiesOnPage.forEach((activity) => {
     const row = document.createElement("tr");
 
     const createdCell = document.createElement("td");
@@ -92,35 +182,88 @@ function createActivityTable(activities) {
     const durationCell = document.createElement("td");
     durationCell.textContent = activity.duration;
 
-    // Lisää solut riville
     row.appendChild(createdCell);
     row.appendChild(activityTypeCell);
     row.appendChild(intensityCell);
     row.appendChild(durationCell);
 
-    // Lisää rivi taulukkoon
     tableBody.appendChild(row);
   });
 }
 
+// Pagination, sivunumerot activities tablelle
+function renderActivitiesPagination() {
+  const paginationDiv = document.querySelector(".activity-pagination");
+  paginationDiv.innerHTML = "";
+
+  for (let i = 1; i <= totalActivitiesPages; i++) {
+    const button = document.createElement("button");
+    button.innerText = i;
+    button.addEventListener("click", () => {
+      currentActivitiesPage = i;
+      getActivities();
+    });
+    paginationDiv.appendChild(button);
+  }
+}
+
+// Measurements tableen data
+const MEASUREMENT_PAGE_SIZE = 7;
+let currentMeasurementPage = 1;
+let totalMeasurementPages = 1;
+
+const getMeasurementsButton = document.querySelector(".get_measurements");
+getMeasurementsButton.addEventListener("click", () => {
+  getMeasurements();
+});
+
+async function getMeasurements() {
+  let token = localStorage.getItem("token");
+
+  const options = {
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+  };
+
+  const url = `http://localhost:3000/api/measurements`;
+
+  fetchData(url, options)
+    .then((data) => {
+      totalMeasurementPages = Math.ceil(data.length / PAGE_SIZE);
+      renderMeasurementPagination();
+      createMeasurementTable(data);
+    })
+    .catch((error) => {
+      console.error("Error fetching measurements:", error);
+    });
+}
+
+// Luodaan measurements merkinnöistä table
 function createMeasurementTable(measurements) {
   const tableBody = document.querySelector(".measurements-table tbody");
 
   tableBody.innerHTML = "";
-  console.log("1");
 
-  if (measurements.length === 0) {
+  const start = (currentMeasurementPage - 1) * MEASUREMENT_PAGE_SIZE;
+  const end = start + MEASUREMENT_PAGE_SIZE;
+  const measurementsOnPage = measurements.slice(start, end);
+
+  if (measurementsOnPage.length === 0) {
     const noMeasurementsRow = document.createElement("tr");
     const noMeasurementsCell = document.createElement("td");
-    noMeasurementsCell.setAttribute("colspan", "4");
+    noMeasurementsCell.setAttribute("colspan", "5");
     noMeasurementsCell.textContent =
-      "Ei mittauksia vielä, aloita lisäämällä mittaus!";
+      "No measurements yet, start by adding a measurement!";
     noMeasurementsRow.appendChild(noMeasurementsCell);
     tableBody.appendChild(noMeasurementsRow);
     return;
   }
 
-  measurements.forEach((measurement) => {
+  getMeasurementsButton.style.display = "none";
+
+  measurementsOnPage.forEach((measurement) => {
     const row = document.createElement("tr");
 
     const measurementTimeCell = document.createElement("td");
@@ -148,171 +291,43 @@ function createMeasurementTable(measurements) {
   });
 }
 
-// Muuntaa ISO-muotoisen päivämäärän selkeämmäksi muodoksi
-function formatDateString(dateString) {
-  const date = new Date(dateString);
-  const options = {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  };
-  return date.toLocaleString("fi-FI", options);
-}
+// Pagination, sivunumerot measurements tablelle
+function renderMeasurementPagination() {
+  const paginationDiv = document.querySelector(".measurement-pagination");
+  paginationDiv.innerHTML = "";
 
-const getEntryButton = document.querySelector(".get_entry");
-getEntryButton.addEventListener("click", async () => {
-  let token = localStorage.getItem("token");
-
-  const options = {
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + token,
-    },
-  };
-
-  const url = `http://localhost:3000/api/entries`;
-
-  fetchData(url, options)
-    .then((data) => {
-      createEntryTable(data);
-    })
-    .catch((error) => {
-      console.error("Error fetching entries:", error);
+  for (let i = 1; i <= totalMeasurementPages; i++) {
+    const button = document.createElement("button");
+    button.innerText = i;
+    button.addEventListener("click", () => {
+      currentMeasurementPage = i;
+      getMeasurements();
     });
-});
-
-const getActivityButton = document.querySelector(".get_activity");
-getActivityButton.addEventListener("click", async () => {
-  let token = localStorage.getItem("token");
-
-  const options = {
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + token,
-    },
-  };
-
-  const url = `http://localhost:3000/api/activities`;
-
-  fetchData(url, options)
-    .then((data) => {
-      createActivityTable(data);
-    })
-    .catch((error) => {
-      console.error("Error fetching activities:", error);
-    });
-});
-
-const getMeasurementsButton = document.querySelector(".get_measurements");
-getMeasurementsButton.addEventListener("click", async () => {
-  let token = localStorage.getItem("token");
-
-  const options = {
-    method: "GET",
-    headers: {
-      Authorization: "Bearer " + token,
-    },
-  };
-
-  const url = `http://localhost:3000/api/measurements`;
-
-  fetchData(url, options)
-    .then((data) => {
-      console.log(data)
-      createMeasurementTable(data);
-    })
-    .catch((error) => {
-      console.error("Error fetching measurements:", error);
-    });
-});
-
-const activityForm = document.getElementById("activityForm");
-const activityTableBody = document.querySelector(".activity-table tbody");
-
-activityForm.addEventListener("submit", async function (event) {
-  event.preventDefault();
-
-  // Hae token local storagesta
-  let token = localStorage.getItem("token");
-
-  // Hae lomakkeen tiedot
-  const activityType = document.getElementById("activityType").value;
-  const intensity = document.getElementById("intensity").value;
-  const duration = document.getElementById("duration").value;
-
-  // Muodosta pyyntöä varten asetukset, mukaan lukien Authorization-header
-  const options = {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-    body: JSON.stringify({
-      activity_type: activityType,
-      intensity: intensity,
-      duration: duration,
-    }),
-  };
-
-  // Muodosta URL
-  const url = `http://localhost:3000/api/activities`;
-
-  try {
-    // Lähetä pyyntö backendiin
-    const responseData = await fetchData(url, options);
-    console.log("Activity added successfully:", responseData);
-
-    // Lisää aktiviteetti listaan
-    appendActivityToList(responseData);
-  } catch (error) {
-    console.error("Error adding activity:", error);
+    paginationDiv.appendChild(button);
   }
-});
-
-function appendActivityToList(activity) {
-  const row = document.createElement("tr");
-
-  const createdCell = document.createElement("td");
-  createdCell.textContent = activity.created_at; // Muotoillaan päivämäärä
-
-  const activityTypeCell = document.createElement("td");
-  activityTypeCell.textContent = activity.activity_type;
-
-  const intensityCell = document.createElement("td");
-  intensityCell.textContent = activity.intensity;
-
-  const durationCell = document.createElement("td");
-  durationCell.textContent = activity.duration;
-
-  // Lisää solut riville
-  row.appendChild(createdCell);
-  row.appendChild(activityTypeCell);
-  row.appendChild(intensityCell);
-  row.appendChild(durationCell);
-
-  // Lisää rivi taulukkoon
-  activityTableBody.appendChild(row);
 }
 
-// Lisää tapahtumankäsittelijä napille
+
+// Diary entry formi
 const postEntryButton = document.querySelector(".add-entry");
 postEntryButton.addEventListener("click", async (event) => {
   event.preventDefault();
 
-  // Hae token local storagesta
   let token = localStorage.getItem("token");
 
-  // Hae lomakkeen tiedot
   const entryDate = document.getElementById("entryDate").value;
   const mood = document.getElementById("mood").value;
   const weight = document.getElementById("weight").value;
   const sleepHours = document.getElementById("sleepHours").value;
   const notes = document.getElementById("notes").value;
 
-  // Muodosta pyyntöä varten asetukset, mukaan lukien Authorization-header
+  const form = document.getElementById("entryForm");
+
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return; 
+  }
+
   const options = {
     method: "POST",
     headers: {
@@ -328,14 +343,19 @@ postEntryButton.addEventListener("click", async (event) => {
     }),
   };
 
-  // Muodosta URL
   const url = `http://localhost:3000/api/entries`;
 
-  // Lähetä pyyntö backendiin
   fetchData(url, options)
     .then((data) => {
       const notification = document.getElementById("notification");
       notification.classList.add("show-notification");
+
+      document.getElementById("entryDate").value = "";
+      document.getElementById("mood").value = "";
+      document.getElementById("weight").value = "";
+      document.getElementById("sleepHours").value = "";
+      document.getElementById("notes").value = "";
+
       setTimeout(() => {
         notification.classList.remove("show-notification");
       }, 3000);
@@ -345,20 +365,24 @@ postEntryButton.addEventListener("click", async (event) => {
     });
 });
 
-// Lisää tapahtumankäsittelijä napille
+
+// Activity formi
 const postActivityButton = document.querySelector(".add-activity");
 postActivityButton.addEventListener("click", async (event) => {
   event.preventDefault();
 
-  // Hae token local storagesta
   let token = localStorage.getItem("token");
 
-  // Hae lomakkeen tiedot
   const activityType = document.getElementById("activityType").value;
   const intensity = document.getElementById("intensity").value;
   const duration = document.getElementById("duration").value;
+  const form = document.getElementById("activityForm");
 
-  // Muodosta pyyntöä varten asetukset, mukaan lukien Authorization-header
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return; 
+  }
+
   const options = {
     method: "POST",
     headers: {
@@ -372,14 +396,17 @@ postActivityButton.addEventListener("click", async (event) => {
     }),
   };
 
-  // Muodosta URL
   const url = `http://localhost:3000/api/activities`;
 
-  // Lähetä pyyntö backendiin
   fetchData(url, options)
     .then((data) => {
       const notification = document.getElementById("notificationActivity");
       notification.classList.add("show-notification");
+
+      document.getElementById("activityType").value = "";
+      document.getElementById("intensity").value = "";
+      document.getElementById("duration").value = "";
+      
       setTimeout(() => {
         notification.classList.remove("show-notification");
       }, 3000);
@@ -389,6 +416,7 @@ postActivityButton.addEventListener("click", async (event) => {
     });
 });
 
+// Measurements formi
 const postMeasurementButton = document.querySelector(".add-measurement");
 postMeasurementButton.addEventListener("click", async (event) => {
   event.preventDefault();
@@ -396,19 +424,17 @@ postMeasurementButton.addEventListener("click", async (event) => {
   let token = localStorage.getItem("token");
 
   const measurementType = document.getElementById("measurementType").value;
-  const value = document.getElementById("value").value;
+  const valueMeas = document.getElementById("value").value;
   const unit = document.getElementById("unit").value;
   const notesMeasurement = document.getElementById("notesMeasurement").value;
 
   const form = document.getElementById("measurementForm");
 
-  // Tarkistetaan, onko form validi
   if (!form.checkValidity()) {
     form.reportValidity();
-    return; // poistutaan funktiosta jos form ei ole validi
+    return; 
   }
 
-  // Muodosta pyyntöä varten asetukset, mukaan lukien Authorization-header
   const options = {
     method: "POST",
     headers: {
@@ -417,21 +443,22 @@ postMeasurementButton.addEventListener("click", async (event) => {
     },
     body: JSON.stringify({
       measurement_type: measurementType,
-      value: value,
+      value: valueMeas,
       unit: unit,
       notes: notesMeasurement,
     }),
   };
 
-  // Muodosta URL
   const url = `http://localhost:3000/api/measurements`;
   
-
-  // Lähetä pyyntö backendiin
   fetchData(url, options)
     .then((data) => {
       const notification = document.getElementById("notificationMeasurement");
       notification.classList.add("show-notification");
+      document.getElementById("measurementType").value = "";
+      document.getElementById("value").value = "";
+      document.getElementById("unit").value = "";
+      document.getElementById("notesMeasurement").value = "";
       setTimeout(() => {
         notification.classList.remove("show-notification");
       }, 3000);
@@ -441,14 +468,9 @@ postMeasurementButton.addEventListener("click", async (event) => {
     });
 });
 
+
+// Funktio, joka näyttää sivustolla kirjautuneen käyttäjän käyttäjänimen
 async function showUserName() {
-  // hae käyttäjän omat tiedot
-  // 1. joko lokal storagesta jos on tallessa
-  //let name = localStorage.getItem('name');
-
-  //document.getElementById('name').innerHTML = name;
-  // 2. hae uudestaan /api/auth/me endpointin kautta
-
   const url = "http://localhost:3000/api/auth/me";
   let token = localStorage.getItem("token");
 
@@ -459,13 +481,15 @@ async function showUserName() {
     },
   };
   fetchData(url, options).then((data) => {
-    console.log(data);
     const username = data.user.username;
     document.getElementById("name").innerHTML = username;
     showGreeting(username);
   });
 }
 
+showUserName();
+
+// Näytetään tervehdys käyttäjälle vuorokauden ajan mukaan
 async function showGreeting(username) {
   const currentTime = new Date();
   const currentHour = currentTime.getHours();
@@ -482,13 +506,11 @@ async function showGreeting(username) {
   const notification = document.querySelector(".notificationWelcome");
   notification.innerHTML = `${greeting}, dear diary user, <strong>${username}</strong>!`;
 
-  // Lisää luokka animaatiota varten
-  notification.classList.add('showNotification');
+  notification.classList.add('show-notification');
   
-  // Odota hetki ja poista animaatio
   setTimeout(() => {
-      notification.classList.remove('showNotification');
-  }, 5000); // Ajan pituus millisekunteina, tässä 5 sekuntia
+      notification.classList.remove('show-notification');
+  }, 5000);
 }
 
 showGreeting();
@@ -515,13 +537,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 // logataan ulos kun painetaan logout nappulaa
-
 document.querySelector(".logout").addEventListener("click", logOut);
 
 function logOut(evt) {
   evt.preventDefault();
   localStorage.removeItem("token");
-  console.log("logginout");
   window.location.href = "index.html";
 }
 
@@ -542,7 +562,3 @@ document.getElementById('formSelector').addEventListener('change', function() {
   // Näytetään valittu lomake
   document.querySelector(`.${selectedForm}-form`).style.display = 'block';
 });
-
-
-
-showUserName();

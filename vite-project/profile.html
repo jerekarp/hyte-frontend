@@ -1,40 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="style.css">
-    <title>Vite App</title>
+    <title>Profile & Users</title>
   </head>
   <body>
     <ul>
       <li><a href="home.html">HealthDiary</a></li>
       <li><a href="profile.html">Profile & Users</a></li>
       <li><a href="about.html">About</a></li>
-      <div class="user">Logged in as user <span id="name">NIMI TÄHÄN</span></div>
       <li style="float: right" class="active logout"><a href="">Logout</a></li>
     </ul>
+    <div class="user">Logged in as user <span id="name">NIMI TÄHÄN</span></div>
 
-    <div class="banner">
-      <!-- IMAGE FROM FREEPIK
-      https://www.freepik.com/free-photo/top-view-notebook-with-plant_8132324.htm#fromView=
-      search&page=2&position=3&uuid=58343d17-897e-449f-8740-2c9077331bc6 -->
-        <img src="banner.jpg" alt="Banner image">
+    <div class="bannerProfile">
+      <!-- IMAGE FROM https://www.webfx.com/blog/web-design/minimalist-website-designs/-->
+        <img src="profileBanner.png" alt="Profile Banner image">
     </div>
 
     <div id="app">
       <div class="forms">
         <div style="flex: 1">
-          <h3>FIND ALL USERS</h3>
+          <h3>FIND ALL USERS
+            <img src="search.png" alt="search">
+          </h3>
 
-          <p>
-              You can retrieve users by pressing the Find users button. You can view additional information by clicking 
-              <span style="background-color:#f2e49448; padding: 2px 5px; border-radius: 3px;">Info</span>, 
-              or you can delete your own information by clicking <span style="background-color:#f2a29448; padding: 2px 5px; border-radius: 3px;">Delete</span>.
-              Only admins can delete other users.
+          <p style="text-align: left;">
+            You can retrieve users by pressing the Find users button. You can view additional information by clicking
+            <span style="background-color:#f2e49448; padding: 2px 5px; border-radius: 3px;">Info</span>,
+            or you can delete your own information by clicking <span style="background-color:#f2a29448; padding: 2px 5px; border-radius: 3px;">Delete</span>.
+            Only admins can delete other users.
           </p>
+    
+    
           
-
           <table class="styled-table">
             <thead>
               <tr>
@@ -50,31 +51,43 @@
               <!-- # Get all users -->
               <!-- GET http://127.0.0.1:3000/api/users -->
             </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="5" class="pagination-container">
+                  <button class="get_users">Find users</button>
+                  <div class="pagination"></div>
+                </td>
+              </tr>
+            </tfoot>
           </table>
-
-          <button class="get_users">Find users</button>
+          
+          
         </div>
         <div style="flex: 1">
-          <h3>UPDATE YOUR USER DATA</h3>
+          <h3>UPDATE YOUR USER DATA
+            <img src="setting.png" alt="settings">
+          </h3>
         
           <p>
             You can edit your accounts information here:
           </p>
         
-          <form class="addform">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username"><br><br>
+          <form class="addform" id="addForm">
+            <label for="username" class="username">Username:</label>
+            <input type="text" id="username" name="username" required><br><br>
             <label for="password">Password:</label>
-            <input type="password" id="password" name="password"><br><br>
-            <label for="email">Email::</label>
-            <input type="email" id="email" name="email"><br><br>
+            <input type="password" id="password" name="password" required><br><br>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required><br><br>
             <button type="submit" class="update_user">Update</button>
           </form>
         </div>        
-        </div>
       </div>
     </div>
 
+    <div id="notificationUserUpdated" class="notification">
+      User updated successfully!
+    </div> 
     <dialog class="info_dialog">
       <p>
         <!-- tänne haetaan yksittäinen valittu käyttäjät -->
@@ -85,7 +98,17 @@
       </p>
       <button autofocus>Close</button>
     </dialog>
+    <dialog class="delete_dialog">
+      <p></p>
+      <button class="close_button">Close</button>
+      <button class="delete_button">Delete</button>
+    </dialog>
+    
 
+    <footer>
+      <img id="herbs" src="herbs.png" alt="herbs">
+      <p>&copy; Jere Karppinen. All rights reserved.</p>
+    </footer>
 
     <script type="module" src="/profile.js"></script>
 

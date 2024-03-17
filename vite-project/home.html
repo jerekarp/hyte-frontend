@@ -1,19 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="style.css">
-    <title>Vite App</title>
+    <title>HealthDiary</title>
   </head>
   <body>
     <ul>
       <li><a href="home.html">HealthDiary</a></li>
       <li><a href="profile.html">Profile & Users</a></li>
       <li><a href="about.html">About</a></li>
-      <div class="user">Logged in as user <span id="name">NIMI TÄHÄN</span></div>
       <li style="float: right" class="active logout"><a href="">Logout</a></li>
     </ul>
+    
+    <div class="user">Logged in as user <span id="name">NIMI TÄHÄN</span></div>
 
     <div class="banner">
       <!-- IMAGE FROM FREEPIK
@@ -21,7 +22,6 @@
       search&page=2&position=3&uuid=58343d17-897e-449f-8740-2c9077331bc6 -->
         <img src="banner.jpg" alt="Banner image">
     </div>
-
     
     <div id="app">
       <div class="notificationWelcome">NIMI TÄHÄN!</div>
@@ -85,10 +85,7 @@
 
         <div style="flex: 1">
 
-          <h3>ENTRIES</h3>
-    
-          <p>Voit hakea päiväkirjamerkintäsi painamalla alla olevaa nappia. </p>
-          <button class="get_entry">Click and search your diary entries:</button>
+          <h3 id="entries">ENTRIES</h3>
           <table class="entry-table">
             <thead>
               <tr>
@@ -103,11 +100,17 @@
             <tbody>
               <!-- Tähän lisätään päiväkirjamerkinnät -->
             </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="6" class="pagination-container">
+                  <button class="get_entry">Search diary entries</button>
+                  <div class="pagination"></div>
+                </td>
+              </tr>
+            </tfoot>
           </table>
           
-      
-          <p>Voit hakea aktiviteettejasi painamalla alla olevaa nappia. </p>
-          <button class="get_activity">Click and search your activities:</button>
+          <h3 id="activities">ACTIVITIES</h3>
           <table class="activity-table">
             <thead>
               <tr>
@@ -120,25 +123,35 @@
             <tbody>
               <!-- Tähän lisätään aktiviteetit -->
             </tbody>
+            <tr>
+              <td colspan="4" class="pagination-container">
+                <button class="get_activity">Search activity entries</button>
+                <div class="activity-pagination"></div>
+              </td>
+            </tr>
+          </table> 
+
+          <h3 id="measurements">MEASUREMENTS</h3>
+          <table class="measurements-table">
+            <thead>
+              <tr>
+                <th>Measurement Time</th>
+                <th>Measurement Type</th>
+                <th>Value</th>
+                <th>Unit</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Tähän lisätään mittausmerkinnät -->
+            </tbody>
+            <tr>
+              <td colspan="5" class="pagination-container">
+                <button class="get_measurements">Search measurements</button>
+                <div class="measurement-pagination"></div>
+              </td>
+            </tr>
           </table>
-      
-            <p>Voit hakea measurements-datasi painamalla alla olevaa nappia. </p>
-            <button class="get_measurements">Click and search your measurements:</button>
-            <table class="measurements-table">
-              <thead>
-                <tr>
-                  <th>Measurement Time</th>
-                  <th>Measurement Type</th>
-                  <th>Value</th>
-                  <th>Unit</th>
-                  <th>Notes</th>
-                </tr>
-              </thead>
-              <tbody>
-                <!-- Tähän lisätään measurements merkinnät -->
-              </tbody>
-            </table>
-          </div>
         
         <div id="notification" class="notification">
           Diary entry added successfully!
@@ -150,7 +163,9 @@
           Measurement entry added successfully!
         </div>
       </div>
+      </div>
     </div>
+    
     
 
     <dialog class="info_dialog">
@@ -164,6 +179,10 @@
       <button autofocus>Close</button>
     </dialog>
 
+    <footer>
+      <img id="herbs" src="herbs.png" alt="herbs">
+      <p>&copy; Jere Karppinen. All rights reserved.</p>
+    </footer>
 
     <script type="module" src="/home.js"></script>
 

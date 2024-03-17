@@ -1,6 +1,10 @@
-import { fetchData } from "/fetch.js";
+import { fetchData } from "/fetch.js";12
 
 // haetaan kaikki käyttäjät ja luodaan niistä taulukko
+
+const PAGE_SIZE = 10;
+let currentPage = 1;
+let totalPages = 1;
 
 const allButton = document.querySelector(".get_users");
 allButton.addEventListener("click", getUsers);
@@ -8,6 +12,7 @@ allButton.addEventListener("click", getUsers);
 async function getUsers() {
   const url = "http://localhost:3000/api/users";
   let token = localStorage.getItem("token");
+  document.querySelector(".get_users").style.display = "none";
   const options = {
     method: "GET",
     headers: {
@@ -15,32 +20,28 @@ async function getUsers() {
     },
   };
   fetchData(url, options).then((data) => {
+    totalPages = Math.ceil(data.length / PAGE_SIZE);
+    renderPagination();
     createTable(data);
   });
 }
 
 function createTable(data) {
-  console.log(data);
-
   const tbody = document.querySelector(".tbody");
   tbody.innerHTML = "";
 
-  data.forEach((element) => {
-    console.log(element.username);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const end = start + PAGE_SIZE;
+  const usersOnPage = data.slice(start, end);
 
-    // Luodaan jokaiselle riville ensin TR elementti alkuun
+  usersOnPage.forEach((element) => {
     const tr = document.createElement("tr");
 
-    // Luodaan soluja mihin tiedot
     const td1 = document.createElement("td");
     td1.innerText = element.username;
 
     const td2 = document.createElement("td");
     td2.innerText = element.user_level;
-
-    // staattiseen luontiin
-    //const td3 = document.createElement('td');
-    //td3.innerHTML = `<button class="check" data-id="${element.user_id}">Info</button>`;
 
     const td3 = document.createElement("td");
     const button1 = document.createElement("button");
@@ -51,7 +52,6 @@ function createTable(data) {
 
     button1.addEventListener("click", getUser);
 
-    // td4
     const td4 = document.createElement("td");
     const button2 = document.createElement("button");
     button2.className = "del";
@@ -59,10 +59,8 @@ function createTable(data) {
     button2.innerText = "Delete";
     td4.appendChild(button2);
 
-    // 2. Lisää kuuntelija kun taulukko on tehty
     button2.addEventListener("click", deleteUser);
 
-    // td5
     const td5 = document.createElement("td");
     td5.innerText = element.user_id;
 
@@ -74,6 +72,22 @@ function createTable(data) {
     tbody.appendChild(tr);
   });
 }
+
+function renderPagination() {
+  const paginationDiv = document.querySelector(".pagination");
+  paginationDiv.innerHTML = "";
+
+  for (let i = 1; i <= totalPages; i++) {
+    const button = document.createElement("button");
+    button.innerText = i;
+    button.addEventListener("click", () => {
+      currentPage = i;
+      getUsers();
+    });
+    paginationDiv.appendChild(button);
+  }
+}
+
 
 // Haetaan dialogi yksittäisille tiedoille
 // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog
@@ -87,8 +101,9 @@ closeButton.addEventListener("click", () => {
 async function getUser(evt) {
   // haetaan data-attribuutin avulla id, tämä nopea tapa
   const id = evt.target.attributes["data-id"].value;
-  console.log("Getting individual data for ID:", id);
-  const url = `http://127.0.0.1:3000/api/users/${id}`;
+  
+  const url = `http://localhost:3000/api/users/${id}`;
+
   let token = localStorage.getItem("token");
   const options = {
     method: "GET",
@@ -111,13 +126,6 @@ async function getUser(evt) {
 }
 
 async function showUserName() {
-  // hae käyttäjän omat tiedot
-  // 1. joko lokal storagesta jos on tallessa
-  //let name = localStorage.getItem('name');
-
-  //document.getElementById('name').innerHTML = name;
-  // 2. hae uudestaan /api/auth/me endpointin kautta
-
   const url = "http://localhost:3000/api/auth/me";
   let token = localStorage.getItem("token");
 
@@ -134,16 +142,14 @@ async function showUserName() {
   });
 }
 
-async function deleteUser(evt) {
-  console.log("Deletoit tietoa");
+showUserName();
 
-  // Tapa 1 - haetaan arvo tutkimalla eventtiä
+
+async function deleteUser(evt) {
+
   const id = evt.target.attributes["data-id"].value;
 
-  // Tapa 2 - haetaan ''viereinen'' elementti
-  const id2 = evt.target.parentElement.nextElementSibling.textContent;
-
-  const url = `http://127.0.0.1:3000/api/users/${id}`;
+  const url = `http://localhost:3000/api/users/${id}`;
   let token = localStorage.getItem("token");
   const options = {
     method: "DELETE",
@@ -152,15 +158,49 @@ async function deleteUser(evt) {
     },
   };
 
-  const answer = confirm(
-    `Oletko varma, että haluat poistaa käyttäjän ID: ${id} `
-  );
-  if (answer) {
-    fetchData(url, options).then((data) => {
-      console.log(data);
-      getUsers();
-    });
-  }
+  const deleteDialog = document.querySelector('.delete_dialog');
+
+  deleteDialog.querySelector("p").innerText = `Are you sure that you want to delete user ID: ${id}?`;
+
+  deleteDialog.showModal();
+
+  deleteDialog.querySelector('.close_button').addEventListener('click', async function() {
+    deleteDialog.close();
+  });
+
+  deleteDialog.querySelector('.delete_button').addEventListener('click', async function() {
+
+    // Tarkistetaan, onko käyttäjä admin tai poistaa oman käyttäjänsä
+    if (id === localStorage.getItem("user_id") || isAdmin()) {
+      try {
+        const result = await fetchData(url, options);
+        getUsers();
+      } catch (error) {
+        console.error('Error deleting user:', error);
+
+      }
+    } else {
+      deleteDialog.style.border = '3px solid rgb(250, 3, 3)'; 
+      const dialogText = deleteDialog.querySelector("p");
+      dialogText.innerText = 'Only admins can delete other users!';
+      dialogText.style.fontWeight = 'bold';
+      dialogText.style.fontSize = '20px';
+      setTimeout(() => {
+        deleteDialog.style.border = '';
+        dialogText.innerText = '';
+        dialogText.style.fontWeight = '';
+        dialogText.style.fontSize = '';
+        deleteDialog.close();
+    }, 4000);
+    }
+  }); // Tässä suljetaan deleteDialog.addEventListener
+}
+
+
+// Tarkistus admin-oikeuksista
+function isAdmin() {
+  let user = JSON.parse(localStorage.getItem("user"));
+  return user && user.user_level === "admin";
 }
 
 
@@ -169,13 +209,20 @@ document.querySelector(".update_user").addEventListener("click", updateUser);
 async function updateUser(evt) {
   evt.preventDefault();
 
-  const url = "http://127.0.0.1:3000/api/users/";
+  const url = "http://localhost:3000/api/users/";
   let token = localStorage.getItem("token");
 
   // Haetaan lomakkeen tiedot
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
   const email = document.getElementById("email").value;
+
+  const form = document.getElementById("addForm");
+
+  if (!form.checkValidity()) {
+    form.reportValidity();
+    return; 
+  }
 
   const userData = {
     username: username,
@@ -192,9 +239,19 @@ async function updateUser(evt) {
     body: JSON.stringify(userData),
   };
   fetchData(url, options).then((data) => {
-    console.log(data);
+    // Näytä ilmoitus käyttäjän päivityksen jälkeen
+    const notificationUserUpdated = document.getElementById("notificationUserUpdated");
+    notificationUserUpdated.classList.add("show-notification");
+    setTimeout(() => {
+      notificationUserUpdated.classList.remove("show-notification");
+    }, 3000);
+    document.getElementById("username").value = "";
+    document.getElementById("password").value = "";
+    document.getElementById("email").value = "";
+    getUsers();
   });
 }
+
 
 // logataan ulos kun painetaan logout nappulaa
 
@@ -203,11 +260,5 @@ document.querySelector(".logout").addEventListener("click", logOut);
 function logOut(evt) {
   evt.preventDefault();
   localStorage.removeItem("token");
-  console.log("logginout");
   window.location.href = "index.html";
 }
-
-showUserName();
-
-
-
