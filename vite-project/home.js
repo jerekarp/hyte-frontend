@@ -552,6 +552,9 @@ document.querySelector(".logout").addEventListener("click", logOut);
 function logOut(evt) {
   evt.preventDefault();
   localStorage.removeItem("token");
+  localStorage.removeItem("user_id");
+  localStorage.removeItem("name");
+  localStorage.removeItem("user_level");
   window.location.href = "index.html";
 }
 
