@@ -397,7 +397,7 @@ button:focus-visible {
 
 
 main {
-  background-image: url('/diary.jpg');
+  background-image: url('img/diary.jpg');
   background-position: bottom;
   background-size: 100%;
   background-repeat: no-repeat;
@@ -823,7 +823,7 @@ form {
 
 form.addform {
   min-width: 430px;
-  background-image: url("profile.jpg"); /* Photo by Leone Venter on Unsplash ttps://unsplash.com/photos/magic-keyboard-beside-mug-and-click-pen-VieM9BdZKFo */
+  background-image: url("img/profile.jpg"); /* Photo by Leone Venter on Unsplash ttps://unsplash.com/photos/magic-keyboard-beside-mug-and-click-pen-VieM9BdZKFo */
   background-size: cover;
   background-position: center;
   color: black;
